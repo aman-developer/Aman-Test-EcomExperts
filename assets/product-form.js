@@ -116,3 +116,22 @@ if (!customElements.get('product-form')) {
     }
   );
 }
+
+document.getElementById('custom-size-select').addEventListener('change', function() {
+  var value = this.value,
+  sizeRadio = document.querySelector('label[data-value="'+value+'"]');
+
+  if(value == "") {
+    var buttons = document.querySelectorAll('.product-form__buttons button');
+
+    // Disable each button
+    buttons.forEach(function (button) {
+      button.disabled = true;
+    });
+    return;
+  }
+
+  if(sizeRadio) {
+    sizeRadio.click();
+  }
+});

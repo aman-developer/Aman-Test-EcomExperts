@@ -964,9 +964,12 @@ class VariantSelects extends HTMLElement {
       this.setUnavailable();
     } else {
       this.updateMedia();
-      this.updateURL();
+      // this.updateURL(); // URL updation Revoked
       this.updateVariantInput();
       this.renderProductInfo();
+      if(document.getElementById('custom-size-select').value != ''){
+        this.renderProductInfo();
+      }
       this.updateShareUrl();
     }
   }
@@ -1018,6 +1021,20 @@ class VariantSelects extends HTMLElement {
     productForms.forEach((productForm) => {
       const input = productForm.querySelector('input[name="id"]');
       input.value = this.currentVariant.id;
+
+      // Creating a hidden input to add the additional product Item.
+      var hiddenInput = document.createElement('input');
+        hiddenInput.type = 'hidden';
+        hiddenInput.name = 'items[1][id]';
+
+      if(input.value == 42681791414372) {
+        hiddenInput.value = 42680763940964;
+        productForm.appendChild(hiddenInput);
+      } else {
+        var existingHiddenInput = productForm.querySelector('input[name="items[1][id]"]');
+        if(existingHiddenInput) productForm.removeChild(existingHiddenInput);
+      }
+
       input.dispatchEvent(new Event('change', { bubbles: true }));
     });
   }
@@ -1136,10 +1153,14 @@ class VariantSelects extends HTMLElement {
         if (inventoryDestination) inventoryDestination.classList.toggle('hidden', inventorySource.innerText === '');
 
         const addButtonUpdated = html.getElementById(`ProductSubmitButton-${sectionId}`);
-        this.toggleAddButton(
-          addButtonUpdated ? addButtonUpdated.hasAttribute('disabled') : true,
-          window.variantStrings.soldOut
-        );
+        if(document.getElementById('custom-size-select').value == "") {
+          this.toggleAddButton(true, '', true);
+        } else {
+          this.toggleAddButton(
+            addButtonUpdated ? addButtonUpdated.hasAttribute('disabled') : true,
+            window.variantStrings.soldOut
+          );
+        }
 
         publish(PUB_SUB_EVENTS.variantChange, {
           data: {

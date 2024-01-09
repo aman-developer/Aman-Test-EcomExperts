@@ -5,7 +5,25 @@ class CartRemoveButton extends HTMLElement {
     this.addEventListener('click', (event) => {
       event.preventDefault();
       const cartItems = this.closest('cart-items') || this.closest('cart-drawer-items');
-      cartItems.updateQuantity(this.dataset.index, 0);
+      const currentItemVariantId = this.dataset.variant_id;
+
+      if(currentItemVariantId == 42681791414372) {
+        const updates = {42680763940964:0, [currentItemVariantId]:0}
+
+        fetch(window.Shopify.routes.root + 'cart/update.js', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ updates })
+        })
+        .then(response => {
+          location.reload();
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+        });
+      } else {cartItems.updateQuantity(this.dataset.index, 0);}
     });
   }
 }
