@@ -1,29 +1,25 @@
 class CartRemoveButton extends HTMLElement {
   constructor() {
     super();
-
+    
     this.addEventListener('click', (event) => {
       event.preventDefault();
       const cartItems = this.closest('cart-items') || this.closest('cart-drawer-items');
       const currentItemVariantId = this.dataset.variant_id;
+      let findvariantobj = allvariants.find(currentvariant => currentvariant.variantid === currentItemVariantId);
+      if(findvariantobj !== undefined)
+      {
+        var giftvariantid = findvariantobj.freegiftid;
+      }
+      cartItems.updateQuantity(this.dataset.index, 0);
+      setTimeout(function() {
+      var elements = document.querySelectorAll(`[data-variant_id="${giftvariantid}"]`);
+      if (elements.length > 0) {
+      var dataIndex = elements[0].getAttribute('data-index');
+      cartItems.updateQuantity(dataIndex, 0);
+      }
+      },1000);
 
-      if(currentItemVariantId == 42681791414372) {
-        const updates = {42680763940964:0, [currentItemVariantId]:0}
-
-        fetch(window.Shopify.routes.root + 'cart/update.js', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ updates })
-        })
-        .then(response => {
-          location.reload();
-        })
-        .catch((error) => {
-          console.error('Error:', error);
-        });
-      } else {cartItems.updateQuantity(this.dataset.index, 0);}
     });
   }
 }
