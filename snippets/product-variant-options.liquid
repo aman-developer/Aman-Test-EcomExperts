@@ -45,6 +45,14 @@
     endfor
   -%}
 
+  {% assign selected_variant = product.selected_or_first_available_variant %}
+  {% for variant in product.variants %}
+    {% if variant.title contains value and variant.image %}
+      {% assign selected_variant = variant %}
+      {% break %}
+    {% endif %}
+  {% endfor %}
+
   {%- if block.settings.picker_type == 'button' -%}
     <input
       type="radio"
@@ -59,10 +67,22 @@
         class="disabled"
       {% endif %}
     >
-    <label for="{{ section.id }}-{{ option.position }}-{{ forloop.index0 }}" data-value="{{value}}">
-      {{ value -}}
-      <span class="visually-hidden">{{ 'products.product.variant_sold_out_or_unavailable' | t }}</span>
-    </label>
+    {% if option.name == 'Color' %}
+      <label
+        class="color_swatch"
+        for="{{ section.id }}-{{ option.position }}-{{ forloop.index0 }}"
+        data-value="{{value}}"
+        style="{% if selected_variant.image.src %}background-image: url('{{ selected_variant.image.src | img_url: 'master' }}');background-color:transparent;{% else %}background-color:{{ value }};{% endif %}"
+      >
+        {{ value -}}
+        <span class="visually-hidden">{{ 'products.product.variant_sold_out_or_unavailable' | t }}</span>
+      </label>
+    {% else %}
+      <label for="{{ section.id }}-{{ option.position }}-{{ forloop.index0 }}" data-value="{{value}}">
+        {{ value -}}
+        <span class="visually-hidden">{{ 'products.product.variant_sold_out_or_unavailable' | t }}</span>
+      </label>
+    {% endif %}
   {%- elsif block.settings.picker_type == 'dropdown' -%}
     <option
       value="{{ value | escape }}"

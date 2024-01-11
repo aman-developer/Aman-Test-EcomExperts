@@ -1606,3 +1606,15 @@ fieldset.js.product-form__input.size {
 .product-form__submit.hide {
 	display:none !important;
 }
+fieldset.js.product-form__input.color label.color_swatch {
+background-color: transparent;
+background-repeat: no-repeat;
+height: 75px;
+width: 75px;
+background-size: 30px auto;
+background-position: center;
+font-size: 0px;
+}
+fieldset.js.product-form__input.color input[type=radio]:checked+label.color_swatch {
+  background-color: #000 !important;
+}
