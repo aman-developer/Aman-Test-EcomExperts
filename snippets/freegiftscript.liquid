@@ -1,0 +1,35 @@
+<script>
+    var allvariants = [];
+    {% if template contains 'product' %}
+      {% for eachvariant in product.variants %}
+      {% if eachvariant.metafields.custom.freegift != blank %}
+      {% assign freegiftobj = eachvariant.metafields.custom.freegift.value %}
+      {% if freegiftobj.available %}
+        var singlevariant = {};
+        singlevariant.variantid  = '{{ eachvariant.id }}';
+        singlevariant.freegiftid = '{{ freegiftobj.selected_or_first_available_variant.id }}';
+        allvariants.push(singlevariant);
+      {% endif %}
+      {% endif %}
+      {% endfor %}
+    {% elsif template contains 'cart' %}
+      {% assign variantids = "" %}
+      {% for item in cart.items %}
+        {% for eachvariant in item.product.variants %}
+        {% if eachvariant.metafields.custom.freegift != blank %}
+        {% assign freegiftobj = eachvariant.metafields.custom.freegift.value %}
+        {% if freegiftobj.available %}
+        var singlevariant = {};
+        singlevariant.variantid  = '{{ eachvariant.id }}';
+        singlevariant.freegiftid = '{{ freegiftobj.selected_or_first_available_variant.id }}';
+        {% unless variantids contains eachvariant.id %}
+        allvariants.push(singlevariant);
+        {% endunless %}
+        {% assign variantids = variantids | append:eachvariant.id | "," %}
+        {% endif %}
+        {% endif %}
+        {% endfor %}
+      {% endfor %}
+    {% endif %}
+  console.log(allvariants);
+</script>
