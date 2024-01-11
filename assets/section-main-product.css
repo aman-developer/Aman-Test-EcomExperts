@@ -1603,3 +1603,6 @@ a.product__text {
 fieldset.js.product-form__input.size {
   display: none;
 }
+.product-form__submit.hide {
+	display:none !important;
+}

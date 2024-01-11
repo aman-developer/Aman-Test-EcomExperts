@@ -96,6 +96,34 @@ if (!customElements.get('product-form')) {
             if (this.cart && this.cart.classList.contains('is-empty')) this.cart.classList.remove('is-empty');
             if (!this.error) this.submitButton.removeAttribute('aria-disabled');
             this.querySelector('.loading__spinner').classList.add('hidden');
+            var added_variant = formData.get('id');
+            let findvariantobj = allvariants.find(currentvariant => currentvariant.variantid === added_variant);
+            if(findvariantobj !== undefined)
+            {
+              var giftvariantid = findvariantobj.freegiftid;
+              var item = {};
+              var this_cart = document.querySelector('cart-notification') || document.querySelector('cart-drawer');
+              item.id = giftvariantid;
+              item.quantity =1;
+              item.sections = this_cart.getSectionsToRender().map((section) => section.id);
+              var data = item;
+              var xhr = new XMLHttpRequest();
+              xhr.open('POST', '/cart/add.js', true);
+              xhr.setRequestHeader('Content-Type', 'application/json');
+              xhr.onload = function() {
+              if (xhr.status >= 200 && xhr.status < 300) {
+              var response = JSON.parse(xhr.responseText);
+              this_cart.renderContents(response);
+              console.log("gift item added");
+              } else {
+              console.error('Request failed with status', xhr.status);
+              }
+              };
+              xhr.onerror = function() {
+              console.error('Request failed');
+              };
+              xhr.send(JSON.stringify(data));
+            }
           });
       }
 
@@ -117,20 +145,30 @@ if (!customElements.get('product-form')) {
   );
 }
 
+
 document.getElementById('custom-size-select').addEventListener('change', function() {
-  var value = this.value,
-  sizeRadio = document.querySelector('label[data-value="'+value+'"]');
-
-  if(value == "") {
-    var buttons = document.querySelectorAll('.product-form__buttons button');
-
-    // Disable each button
-    buttons.forEach(function (button) {
-      button.disabled = true;
-    });
-    return;
+  var value = this.value;
+  var elementMainBtn = document.querySelector('button[data-main-button]');
+  var elementCopyBtn = document.querySelector('button[data-copy-button]');
+  var sizeRadio = document.querySelector('label[data-value="'+value+'"]');
+  if(value == "") 
+  {
+    if (elementMainBtn) {
+    elementMainBtn.classList.add('hide');
+    }
+    if (elementCopyBtn && elementCopyBtn.classList.contains('hide')) {
+    elementCopyBtn.classList.remove('hide');
+    }
   }
-
+  else
+  { 
+    if (elementCopyBtn) {
+    elementCopyBtn.classList.add('hide');
+    }
+    if (elementMainBtn && elementMainBtn.classList.contains('hide')) {
+    elementMainBtn.classList.remove('hide');
+    }
+  }
   if(sizeRadio) {
     sizeRadio.click();
   }
